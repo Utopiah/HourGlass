@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div id="myProgresses" class="progress">
+</div>
+<script>
+var myTasks = new Array();
+myTasks.push(
+	//{name: STRING, requiredtime: SECONDS, done: PERCENTAGE},
+	{name: 'Add project to GitHub', requiredtime: '600', done: '0'},
+	{name: 'Test on Android phone', requiredtime: '60', done: '0'},
+	{name: 'Make sure timers run in the background', requiredtime: '600', done: '0'}
+        );
+
+myTasks.forEach( function(item, index, array){
+	$( "div" ).add( "<div class=\"progress-bar progress-bar-warning progress-bar-striped\" style=\"width: 20%\"><span class=\"sr-only\">"+item.name+"</span></div>" ).appendTo( "#myProgresses" );
+});
+</script>
+</body>
+</html>
