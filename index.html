@@ -14,20 +14,47 @@
 </head>
 <body>
 
+<h2>My progresses</h2>
 <div id="myProgresses" class="progress">
 </div>
+
+<h2>My informations</h2>
+<ul id="myInformation">
+</ul>
+
+<h2>My detailed progresses</h2>
+<ul id="myDetailedProgresses">
+</ul>
+
 <script>
 var myTasks = new Array();
 myTasks.push(
 	//{name: STRING, requiredtime: SECONDS, done: PERCENTAGE},
-	{name: 'Add project to GitHub', requiredtime: '600', done: '0'},
+	{name: 'Add project to GitHub', requiredtime: '600', done: '100'},
+	{name: 'Take into account total time (3x60x60sec in this instance)', requiredtime: '600', done: '0'},
 	{name: 'Test on Android phone', requiredtime: '60', done: '0'},
 	{name: 'Make sure timers run in the background', requiredtime: '600', done: '0'}
         );
 
+var myTargetDeadline = new Date("November 29, 2015 19:00:00");
+var myCurrentDate = new Date();
+var myTimeLeft = Math.round((myTargetDeadline-myCurrentDate)/1000);
+
+var myTotalTimeLeftForTasks = 0;
+$( "#myInformation" ).append( "<li>myTargetDeadline: "+myTargetDeadline+"</li>" );
+$( "#myInformation" ).append( "<li>myCurrentDate: "+myCurrentDate+"</li>" );
+$( "#myInformation" ).append( "<li>myTimeLeft: "+myTimeLeft+"</li>" );
+
 myTasks.forEach( function(item, index, array){
-	$( "div" ).add( "<div class=\"progress-bar progress-bar-warning progress-bar-striped\" style=\"width: 20%\"><span class=\"sr-only\">"+item.name+"</span></div>" ).appendTo( "#myProgresses" );
+	$( "#myDetailedProgresses" ).append( "<li>"+item.name+" ( " + item.done + "% done with required time of " + item.requiredtime + " minutes)</li>" );
+	$( "#myProgresses" ).append( "<div class=\"progress-bar progress-bar-warning progress-bar-striped\" style=\"width: 20%\"><span class=\"sr-only\">"+item.name+"</span></div>" );
+	myTotalTimeLeftForTasks += item.requiredtime - item.requiredtime * item.done / 100;
 });
+
+$( "#myInformation" ).append( "<li>myTotalTimeLeftForTasks: "+myTotalTimeLeftForTasks+"</li>" );
+
+var myTimeLeftWithTasks = myTimeLeft - myTotalTimeLeftForTasks;
+$( "#myInformation" ).append( "<li>myTimeLeftWithTasks: "+myTimeLeftWithTasks+"</li>" );
 </script>
 </body>
 </html>
