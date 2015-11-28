@@ -14,19 +14,31 @@
 </head>
 <body>
 
-<h2>My progresses</h2>
-<div id="myProgresses" class="progress">
-</div>
+<div class="container-fluid">
+	  <div class="row-fluid">
+		 <div class="col-md-4">
+			 <div class="hero-unit">
+			      <h1>HourGlass</h1>
+			      <p>HourGlass, listing tasks objectively to focus on the one you <em>still</em> have the time to do!</p>
+			 </div>
 
-<h2>My informations</h2>
-<ul id="myInformation">
-</ul>
+			<h2>My progresses</h2>
+			<div id="myProgresses" class="progress"></div>
 
-<h2>My detailed progresses</h2>
-<div>
-<table id="myDetailedProgresses" width="100%">
-</table>
-</div>
+			<h2>My informations</h2>
+			<ul id="myInformation"></ul>
+		</div>
+		<div class="col-md-8">
+			<h2>My detailed progresses</h2>
+			<table id="myDetailedProgresses" width="100%" class="table-hover"></table>
+		</div><!--end span9-->
+	</div><!--end row fluid-->
+	<div class="row-fluid">
+		 <div class="col-md-4 col-md-offset-4">
+			<div id="myWarnings" class=""></div>
+		</div>
+	</div><!--end row fluid-->
+</div><!--end contained fluid-->
 
 <script>
 var myTasks = new Array();
@@ -36,17 +48,20 @@ myTasks.push(
 	{name: 'Take into account total time (3x60x60sec in this instance)', requiredtime: '600', done: '40'},
 	{name: 'Resize total bar as percentage of total', requiredtime: '600', done: '10'},
 	{name: 'Test on Android phone', requiredtime: '60', done: '0'},
-	{name: 'Make sure timers run in the background', requiredtime: '600', done: '0'}
+	{name: 'Make sure timers run in the background', requiredtime: '600', done: '0'},
+	{name: 'Let user modify the percentage done of each task', requiredtime: '600', done: '0'},
+	{name: 'Let user add or remove tasks', requiredtime: '600', done: '0'},
+	{name: 'Let user configure deadlines', requiredtime: '600', done: '0'}
         );
 
 var myTargetDeadline = new Date("November 29, 2015 19:00:00");
 var myCurrentDate = new Date();
 var myTimeLeft = Math.round((myTargetDeadline-myCurrentDate)/1000);
-
 var myTotalTimeLeftForTasks = 0;
+
 $( "#myInformation" ).append( "<li>myTargetDeadline: "+myTargetDeadline+"</li>" );
 $( "#myInformation" ).append( "<li>myCurrentDate: "+myCurrentDate+"</li>" );
-$( "#myInformation" ).append( "<li>myTimeLeft: "+myTimeLeft+"</li>" );
+$( "#myInformation" ).append( "<li>myTimeLeft: "+Math.round(myTimeLeft/3600)+"hrs</li>" );
 
 myTasks.forEach( function(item, index, array){
 	var barStatus = "";
@@ -63,16 +78,24 @@ myTasks.forEach( function(item, index, array){
 	}
 	$( "#myDetailedProgresses" ).append( "<tr>"
 	+"<td width=\"40%\"><div class=\"progress\" ><div class=\"progress-bar "+barStatus+" \" style=\"width: "+item.done+"%\"></div></div></td>"
-	+"<td><div class=\"\"> " + item.name + " (" + item.done + "% done with required time of " + item.requiredtime + " minutes)</div></td>"
+	+"<td><div class=\"\"> " + item.name + " (" + item.done + "% done with required time of " + item.requiredtime/60 + " minutes)</div></td>"
 	+"</tr>" );
 	$( "#myProgresses" ).append( "<div class=\"progress-bar progress-bar-warning progress-bar-striped\" style=\"width: 20%\"><span class=\"sr-only\">"+item.name+"</span></div>" );
 	myTotalTimeLeftForTasks += item.requiredtime - item.requiredtime * item.done / 100;
 });
 
-$( "#myInformation" ).append( "<li>myTotalTimeLeftForTasks: "+myTotalTimeLeftForTasks+"</li>" );
+$( "#myInformation" ).append( "<li>myTotalTimeLeftForTasks: "+myTotalTimeLeftForTasks/60+"min</li>" );
 
 var myTimeLeftWithTasks = myTimeLeft - myTotalTimeLeftForTasks;
-$( "#myInformation" ).append( "<li>myTimeLeftWithTasks: "+myTimeLeftWithTasks+"</li>" );
+$( "#myInformation" ).append( "<li>myTimeLeftWithTasks: "+Math.round(myTimeLeftWithTasks/3600)+"hrs</li>" );
+
+if ( myTimeLeft < (myTotalTimeLeftForTasks + 60*60*24) ) {
+	$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <span class="label label-warning">Warning</span> You have less than day left, start to prioritize!</div>');
+}
+
+if ( myTimeLeft < myTotalTimeLeftForTasks ) {
+	$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Warning!</strong> You have less time left than the total amount of tasks, you must drop a task.</div>');
+}
 </script>
 </body>
 </html>
