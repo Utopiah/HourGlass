@@ -99,7 +99,7 @@ if ( myTimeLeft < myTotalTimeLeftForTasks ) {
 
 	myTasks.forEach( function(item, index, array){
 		if (item.done < 100) {
-			$( "#myWarnings" ).append( '<li>'+item.name+'</li>');
+			$( "#myWarnings" ).append( '<li><span class="glyphicon glyphicon-trash" aria-hidden="true"> '+item.name+'</span></li>');
 		}
 	});
 	$( "#myWarnings" ).append( '</ul></div>');
