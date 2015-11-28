@@ -30,7 +30,15 @@
 		</div>
 		<div class="col-md-8">
 			<h2>My detailed progresses</h2>
-			<table id="myDetailedProgresses" width="100%" class="table-hover"></table>
+			<table id="myDetailedProgresses" width="100%" class="table-hover">
+				<tr>
+					<th>Task completion</th>
+					<th>Description</th>
+					<th>Percentage done</th>
+					<th>Total time required</th>
+					<th>Mark as complete</th>
+				</tr>
+			</table>
 		</div><!--end span9-->
 	</div><!--end row fluid-->
 	<div class="row-fluid">
@@ -46,7 +54,7 @@ myTasks.push(
 	//{name: STRING, requiredtime: SECONDS, done: PERCENTAGE},
 	{name: 'Add project to GitHub', requiredtime: '600', done: '100'},
 	{name: 'Take into account total time (3x60x60sec in this instance)', requiredtime: '600', done: '40'},
-	{name: 'Resize total bar as percentage of total', requiredtime: '600', done: '10'},
+	{name: 'Resize total bar as percentage of total', requiredtime: '600', done: '100'},
 	{name: 'Test on Android phone', requiredtime: '60', done: '0'},
 	{name: 'Make sure timers run in the background', requiredtime: '600', done: '0'},
 	{name: 'Let user modify the percentage done of each task', requiredtime: '600', done: '0'},
@@ -58,10 +66,19 @@ var myTargetDeadline = new Date("November 29, 2015 19:00:00");
 var myCurrentDate = new Date();
 var myTimeLeft = Math.round((myTargetDeadline-myCurrentDate)/1000);
 var myTotalTimeLeftForTasks = 0;
+var myTotalTimeRequired = 0;
 
-$( "#myInformation" ).append( "<li>myTargetDeadline: "+myTargetDeadline+"</li>" );
-$( "#myInformation" ).append( "<li>myCurrentDate: "+myCurrentDate+"</li>" );
-$( "#myInformation" ).append( "<li>myTimeLeft: "+Math.round(myTimeLeft/3600)+"hrs</li>" );
+$( "#myInformation" ).append( "<li>My target deadline: "+myTargetDeadline+"</li>" );
+$( "#myInformation" ).append( "<li>Time left: "+Math.round(myTimeLeft/3600)+"hrs</li>" );
+
+myTasks.forEach( function(item, index, array){
+	myTotalTimeLeftForTasks = myTotalTimeRequired + parseInt(item.requiredtime) - parseInt(item.requiredtime) * parseInt(item.done) / 100;
+	myTotalTimeRequired = myTotalTimeRequired + parseInt(item.requiredtime);
+	console.log(myTotalTimeRequired);
+});
+$( "#myInformation" ).append( "<li>Total time required to complete all tasks: "+Math.round(myTotalTimeRequired/60)+"min</li>" );
+var myTimeLeftWithTasks = myTimeLeft - myTotalTimeLeftForTasks;
+$( "#myInformation" ).append( "<li>Time left with tasks: "+Math.round(myTimeLeftWithTasks/3600)+"hrs</li>" );
 
 myTasks.forEach( function(item, index, array){
 	var barStatus = "";
@@ -76,21 +93,21 @@ myTasks.forEach( function(item, index, array){
 			barStatus = "progress-bar-success";
 			break;
 	}
+	var markComplete = "<td></td>" ;
+	if (item.done == 100) { markComplete = "<td><span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></td>" };
 	$( "#myDetailedProgresses" ).append( "<tr>"
-	+"<td width=\"40%\"><div class=\"progress\" ><div class=\"progress-bar "+barStatus+" \" style=\"width: "+item.done+"%\"></div></div></td>"
-	+"<td><div class=\"\"> " + item.name + " (" + item.done + "% done with required time of " + item.requiredtime/60 + " minutes)</div></td>"
+	+"<td width=\"20%\"><div class=\"progress\" ><div class=\"progress-bar "+barStatus+" \" style=\"width: "+item.done+"%\"></div></div></td>"
+	+"<td>" + item.name + "</td>"
+	+"<td>" +item.done + "%</td>"
+	+"<td>" +item.requiredtime/60 + " min</td>"
+	+markComplete
 	+"</tr>" );
-	$( "#myProgresses" ).append( "<div class=\"progress-bar progress-bar-warning progress-bar-striped\" style=\"width: 20%\"><span class=\"sr-only\">"+item.name+"</span></div>" );
-	myTotalTimeLeftForTasks += item.requiredtime - item.requiredtime * item.done / 100;
+	$( "#myProgresses" ).append( "<div class=\"progress-bar " +barStatus+" progress-bar-striped\" style=\"width: "+myTotalTimeRequired/item.requiredtime+"%\"><span class=\"sr-only\">"+item.name+"</span></div>" );
 });
 
-$( "#myInformation" ).append( "<li>myTotalTimeLeftForTasks: "+myTotalTimeLeftForTasks/60+"min</li>" );
-
-var myTimeLeftWithTasks = myTimeLeft - myTotalTimeLeftForTasks;
-$( "#myInformation" ).append( "<li>myTimeLeftWithTasks: "+Math.round(myTimeLeftWithTasks/3600)+"hrs</li>" );
 
 if ( myTimeLeft < (myTotalTimeLeftForTasks + 60*60*24) ) {
-	$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <span class="label label-warning">Warning</span> You have less than day left, start to prioritize!</div>');
+	$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <span class="label label-warning">Warning</span> You have less than <em>1</em> day left, start to prioritize!</div>');
 }
 
 if ( myTimeLeft < myTotalTimeLeftForTasks ) {
