@@ -37,6 +37,7 @@
 					<th>Percentage done</th>
 					<th>Total time required</th>
 					<th>Mark as complete</th>
+					<th>Dropped</th>
 				</tr>
 			</table>
 		</div><!--end span9-->
@@ -49,18 +50,12 @@
 </div><!--end contained fluid-->
 
 <script>
-var myTasks = new Array();
-myTasks.push(
-	//{name: STRING, requiredtime: SECONDS, done: PERCENTAGE},
-	{name: 'Add project to GitHub', requiredtime: '600', done: '100'},
-	{name: 'Take into account total time (3x60x60sec in this instance)', requiredtime: '600', done: '40'},
-	{name: 'Resize total bar as percentage of total', requiredtime: '600', done: '100'},
-	{name: 'Test on Android phone', requiredtime: '60', done: '0'},
-	{name: 'Make sure timers run in the background', requiredtime: '600', done: '0'},
-	{name: 'Let user modify the percentage done of each task', requiredtime: '600', done: '0'},
-	{name: 'Let user add or remove tasks', requiredtime: '600', done: '0'},
-	{name: 'Let user configure deadlines', requiredtime: '600', done: '0'}
-        );
+<?php
+	$json = file_get_contents("MyTasks.json");
+	print("myTasks=");
+	print($json);
+	print(";");
+?>
 
 var myTargetDeadline = new Date("November 29, 2015 19:00:00");
 var myCurrentDate = new Date();
@@ -72,9 +67,8 @@ $( "#myInformation" ).append( "<li>My target deadline: "+myTargetDeadline+"</li>
 $( "#myInformation" ).append( "<li>Time left: "+Math.round(myTimeLeft/3600)+"hrs</li>" );
 
 myTasks.forEach( function(item, index, array){
-	myTotalTimeLeftForTasks = myTotalTimeRequired + parseInt(item.requiredtime) - parseInt(item.requiredtime) * parseInt(item.done) / 100;
-	myTotalTimeRequired = myTotalTimeRequired + parseInt(item.requiredtime);
-	console.log(myTotalTimeRequired);
+	myTotalTimeLeftForTasks = myTotalTimeRequired + item.requiredtime - item.requiredtime * item.done / 100;
+	myTotalTimeRequired = myTotalTimeRequired + item.requiredtime;
 });
 $( "#myInformation" ).append( "<li>Total time required to complete all tasks: "+Math.round(myTotalTimeRequired/60)+"min</li>" );
 var myTimeLeftWithTasks = myTimeLeft - myTotalTimeLeftForTasks;
@@ -95,32 +89,37 @@ myTasks.forEach( function(item, index, array){
 	}
 	var markComplete = "<td></td>" ;
 	if (item.done == 100) { markComplete = "<td><span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></td>" };
+	var markDropped = "<td></td>" ;
+	if (item.dropped) { markDropped = "<td><span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></td>" };
 	$( "#myDetailedProgresses" ).append( "<tr>"
 	+"<td width=\"20%\"><div class=\"progress\" ><div class=\"progress-bar "+barStatus+" \" style=\"width: "+item.done+"%\"></div></div></td>"
 	+"<td>" + item.name + "</td>"
 	+"<td>" +item.done + "%</td>"
 	+"<td>" +item.requiredtime/60 + " min</td>"
 	+markComplete
+	+markDropped
 	+"</tr>" );
 	$( "#myProgresses" ).append( "<div class=\"progress-bar " +barStatus+" progress-bar-striped\" style=\"width: "+myTotalTimeRequired/item.requiredtime+"%\"><span class=\"sr-only\">"+item.name+"</span></div>" );
 });
+if (myTimeLeft = 0) {
+		$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <span class="label label-warning">Alert</span>Your deadline has passed.</div>');
+} else {
+	if ( myTimeLeft < (myTotalTimeLeftForTasks + 60*60*24) ) {
+		$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <span class="label label-warning">Warning</span> You have less than <em>1</em> day left, start to prioritize!</div>');
+	}
 
+	if ( myTimeLeft < myTotalTimeLeftForTasks ) {
+		$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Warning!</strong> You have less time left than the total amount of tasks, you must drop a task.</div>');
+		$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Warning!</strong> The tasks you can still drop are : <ul>');
 
-if ( myTimeLeft < (myTotalTimeLeftForTasks + 60*60*24) ) {
-	$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <span class="label label-warning">Warning</span> You have less than <em>1</em> day left, start to prioritize!</div>');
-}
-
-if ( myTimeLeft < myTotalTimeLeftForTasks ) {
-	$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Warning!</strong> You have less time left than the total amount of tasks, you must drop a task.</div>');
-	$( "#myWarnings" ).append( ' <div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Warning!</strong> The tasks you can still drop are : <ul>');
-
-	myTasks.forEach( function(item, index, array){
-		if (item.done < 100) {
-			$( "#myWarnings" ).append( '<li><span class="glyphicon glyphicon-trash" aria-hidden="true"> '+item.name+'</span></li>');
-		}
-	});
-	$( "#myWarnings" ).append( '</ul></div>');
-	$( "#myWarnings" ).append( '<div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Warning!</strong> The tasks dropped must have a sufficient cumulative length.</div>');
+		myTasks.forEach( function(item, index, array){
+			if (item.done < 100 && !item.dropped) {
+				$( "#myWarnings" ).append( '<li><a href="./backend.php?drop='+item.id+'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></a> '+item.name+'</span></li>');
+			}
+		});
+		$( "#myWarnings" ).append( '</ul></div>');
+		$( "#myWarnings" ).append( '<div class="alert"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Warning!</strong> The tasks dropped must have a sufficient cumulative length.</div>');
+	}
 }
 </script>
 </body>
