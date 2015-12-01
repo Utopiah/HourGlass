@@ -11,8 +11,8 @@
 
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	<script src='//cdn.goroost.com/roostjs/w1eemhrzw23i362ookk5om51pvs4m6ko' async></script>
-	<!-- to consider instead of http://www.html5rocks.com/en/tutorials/service-worker/introduction/ -->
+	<!-- consider instead http://www.html5rocks.com/en/tutorials/service-worker/introduction/ -->
+	<!-- or https://developers.google.com/web/updates/2015/03/push-notifications-on-the-open-web?hl=en -->
 </head>
 <body>
 
